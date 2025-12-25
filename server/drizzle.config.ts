@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default {
-  dialect: "postgresql",
-  schema: "./src/db/schema.ts",
+  dialect: "mysql",
+  schema: "./src/db/schema",
   out: "./src/db/migrations",
   dbCredentials: {
     url : process.env.DB_URL!,
