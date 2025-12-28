@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { env } from "./env";
 
 export interface JwtPayload {
-  userId: number;
+  userId: string;
   role: "USER" | "ADMIN";
 }
 

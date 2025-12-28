@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   mysqlTable,
   varchar,
@@ -9,7 +10,7 @@ import {
 export const rooms = mysqlTable(
   "rooms",
   {
-    id: varchar("id", { length: 36 }).primaryKey(),
+    id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
     roomCode: varchar("room_code", { length: 20 }).notNull(),
     createdBy: varchar("created_by", { length: 36 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
