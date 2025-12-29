@@ -3,7 +3,7 @@ import { messages } from "../db/schema/messages";
 import { roomMembers } from "../db/schema/roomMembers";
 import { eq, and } from "drizzle-orm";
 
-export async function sendMessage(roomId: string, senderId: string, content: string) {
+export async function sendMessage(roomId: number, senderId: string, content: string) {
   const member = await db
     .select()
     .from(roomMembers)

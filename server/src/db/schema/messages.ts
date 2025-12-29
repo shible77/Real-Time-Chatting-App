@@ -12,7 +12,7 @@ export const messages = mysqlTable(
   "messages",
   {
     id: int("id").primaryKey().autoincrement(),
-    roomId: varchar("room_id", { length: 36 }).notNull(),
+    roomId: int("room_id").notNull(),
     senderId: varchar("sender_id", { length: 36 }).notNull(),
     content: text("content").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
