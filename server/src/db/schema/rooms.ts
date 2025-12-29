@@ -5,12 +5,13 @@ import {
   timestamp,
   index,
   uniqueIndex,
+  int,
 } from "drizzle-orm/mysql-core";
 
 export const rooms = mysqlTable(
   "rooms",
   {
-    id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+    id: int("id").primaryKey().autoincrement(),
     roomCode: varchar("room_code", { length: 20 }).notNull(),
     createdBy: varchar("created_by", { length: 36 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

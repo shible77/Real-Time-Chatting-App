@@ -3,7 +3,6 @@ import { env } from "./env";
 
 export interface JwtPayload {
   userId: string;
-  role: "USER" | "ADMIN";
 }
 
 export function verifyToken(token: string): JwtPayload {

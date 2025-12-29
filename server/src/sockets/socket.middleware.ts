@@ -11,8 +11,7 @@ export function socketAuthMiddleware(socket: Socket, next: (err?: Error) => void
     const payload = verifyToken(token);
 
     (socket as AuthenticatedSocket).userId = payload.userId;
-    (socket as AuthenticatedSocket).role = payload.role;
-
+   
     socket.data.rooms = new Map<number, string>();
 
     next();

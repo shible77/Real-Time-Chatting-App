@@ -15,6 +15,13 @@
       "when": 1766740092778,
       "tag": "0001_high_night_nurse",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767032429632,
+      "tag": "0002_simple_human_robot",
+      "breakpoints": true
     }
   ]
 }
