@@ -1,4 +1,3 @@
-// src/sockets/socket.middleware.ts
 import { Socket } from "socket.io";
 import { verifyToken } from "../config/jwt";
 import { AuthenticatedSocket } from "../types/socket";

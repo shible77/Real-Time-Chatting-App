@@ -5,9 +5,11 @@ import { db } from "../db/setup";
 import { users } from "../db/schema/users";
 import { eq } from "drizzle-orm";
 import { env } from "../config/env";
+import { validate } from "../utils/validate";
+import { loginSchema, signupSchema } from "../validators/auth.schema";
 
 export async function signup(req: Request, res: Response) {
-  const { name, email, password } = req.body;
+  const { name, email, password } = validate(signupSchema, req.body);
 
   const hash = await argon2.hash(password);
 
@@ -21,7 +23,7 @@ export async function signup(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
+  const { email, password } = validate(loginSchema, req.body);
 
   const user = await db
     .select()

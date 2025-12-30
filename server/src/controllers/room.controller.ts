@@ -5,6 +5,8 @@ import { rooms } from "../db/schema/rooms";
 import { roomMembers } from "../db/schema/roomMembers";
 import { eq } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
+import { validate } from "../utils/validate";
+import { leaveRoomSchema } from "../validators/room.schema";
 
 export async function createRoom(req: AuthRequest, res: Response) {
   const roomCode = uuid().slice(0, 8);
@@ -29,7 +31,7 @@ export async function getMyRooms(req: AuthRequest, res: Response) {
 }
 
 export async function leaveRoom(req: AuthRequest, res: Response) {
-  const { roomId } = req.params;
+  const { roomId } = validate(leaveRoomSchema, req.params);
 
   await db
     .delete(roomMembers)
