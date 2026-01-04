@@ -13,6 +13,7 @@ export const rooms = mysqlTable(
   {
     id: int("id").primaryKey().autoincrement(),
     roomCode: varchar("room_code", { length: 20 }).notNull(),
+    roomName: varchar("room_name", { length: 100 }).notNull(),
     createdBy: varchar("created_by", { length: 36 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },

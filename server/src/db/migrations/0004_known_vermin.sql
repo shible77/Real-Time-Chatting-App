@@ -1,0 +1,1 @@
+ALTER TABLE `room_members` MODIFY COLUMN `role` varchar(20) NOT NULL DEFAULT 'MEMBER';

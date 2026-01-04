@@ -14,7 +14,7 @@ export const roomMembers = mysqlTable(
     id: int("id").primaryKey().autoincrement(),
     roomId: int("room_id").notNull(),
     userId: varchar("user_id", { length: 36 }).notNull(),
-    role: varchar("role", { length: 20 }).default("member").notNull(),
+    role: varchar("role", { length: 20 }).default("MEMBER").notNull(),
     joinedAt: timestamp("joined_at").defaultNow().notNull(),
   },
   (table) => ({

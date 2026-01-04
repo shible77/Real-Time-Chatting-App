@@ -1,0 +1,1 @@
+ALTER TABLE `rooms` ADD `room_name` varchar(100) NOT NULL;
