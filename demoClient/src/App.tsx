@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Login from "./pages/Login";
+import Chat from "./pages/Rooms";
+import { getToken } from "./auth/auth.store";
+import { setAuthToken } from "./api/client";
+import { connectSocket } from "./sockets/socket";
 
-function App() {
-  const [count, setCount] = useState(0);
+export default function App() {
+  const token = getToken();
+  const [loggedIn, setLoggedIn] = useState(!!token);
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <button onClick={() => setCount((count) => count + 1)} className="w-1/2 h-8 bg-amber-300 rounded-xl hover:bg-amber-500 hover:cursor-pointer sm:w-1/4">
-        count is {count}
-      </button>
-    </div>
-  );
+  useEffect(() => {
+    if (token) {
+      setAuthToken(token);
+      connectSocket(token);
+    }
+  }, [token]);
+
+  return loggedIn ? <Chat /> : <Login onLogin={() => setLoggedIn(true)} />;
 }
-
-export default App;
