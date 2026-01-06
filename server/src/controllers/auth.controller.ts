@@ -19,7 +19,7 @@ export async function signup(req: Request, res: Response) {
     passwordHash: hash,
   });
 
-  res.status(201).json({ message: "USER_CREATED" });
+  res.status(201).json({status:"success", message: "USER_CREATED" });
 }
 
 export async function login(req: Request, res: Response) {
