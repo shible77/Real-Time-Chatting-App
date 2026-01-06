@@ -4,6 +4,7 @@ import { saveToken } from "../auth/auth.store";
 import { setAuthToken } from "../api/client";
 import { connectSocket } from "../sockets/socket";
 import { Link, useNavigate } from "react-router-dom";
+import { saveUserName } from "../auth/auth.store";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,9 +12,10 @@ export default function Login() {
   const navigate = useNavigate();
 
   async function login() {
-    const { token } = await loginApi(email, password);
+    const { token, username } = await loginApi(email, password);
 
     saveToken(token);
+    saveUserName(username);
     setAuthToken(token);
     connectSocket(token);
 

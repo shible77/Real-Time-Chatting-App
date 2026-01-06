@@ -3,9 +3,14 @@ import { joinRoomApi, getMyRoomsApi } from "../api/rooms.api";
 import { getSocket } from "../sockets/socket";
 import { useNavigate } from "react-router-dom";
 
+type room = {
+  id: number,
+  roomName: string
+}
+
 export default function Dashboard() {
   const [roomCode, setRoomCode] = useState("");
-  const [rooms, setRooms] = useState<any[]>([]);
+  const [rooms, setRooms] = useState<room[]>([]);
   const socket = getSocket();
   const navigate = useNavigate();
 
@@ -19,7 +24,7 @@ export default function Dashboard() {
     return () => {
       socket.off("room:join_socket");
     };
-  }, []);
+  }, [socket]);
 
   async function joinRoom() {
     await joinRoomApi(roomCode);

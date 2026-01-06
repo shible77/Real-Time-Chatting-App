@@ -46,5 +46,5 @@ export async function login(req: Request, res: Response) {
     { expiresIn: "7d" }
   );
 
-  res.json({ token });
+  res.status(200).json({status:"success", token:token, userName: user[0].name });
 }

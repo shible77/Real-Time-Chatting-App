@@ -11,6 +11,7 @@ import { getIO } from "../sockets/socket.instance";
 import { ROOM_EVENTS } from "../sockets/rooms/room.events";
 
 export async function createRoom(req: AuthRequest, res: Response) {
+  const io=getIO();
   const roomCode = uuid().slice(0, 8);
   const roomName = `Room-${roomCode}`;
   const [result] = await db
@@ -22,7 +23,10 @@ export async function createRoom(req: AuthRequest, res: Response) {
     userId: req.user!.userId,
     role: "ADMIN",
   });
-
+  io.to(`user:${req.user!.userId}`).emit(ROOM_EVENTS.JOIN_SOCKET, {
+    roomId: result.insertId,
+    roomName
+  });
   res.status(201).json({ roomCode });
 }
 
@@ -59,7 +63,6 @@ export async function joinRoomByCode(req: AuthRequest, res: Response) {
   const io = getIO();
   io.to(`user:${userId}`).emit(ROOM_EVENTS.JOIN_SOCKET, {
   roomId: room.id,
-  roomCode: room.roomCode,
   roomName: room.roomName});
 
   return res.status(200).json({

@@ -2,12 +2,20 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getMessagesApi } from "../api/messages.api";
 import { getSocket } from "../sockets/socket";
+import { getUserName } from "../auth/auth.store";
+
+type message = {
+  senderName: string,
+  content: string,
+  roomId: number
+}
 
 export default function ChatRoom() {
   const { roomId } = useParams();
   const socket = getSocket();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<message[]>([]);
   const [text, setText] = useState("");
+  const username = getUserName();
 
   useEffect(() => {
     getMessagesApi(Number(roomId)).then(setMessages);
@@ -26,10 +34,11 @@ export default function ChatRoom() {
       });
       socket.off("message:receive");
     };
-  }, [roomId]);
+  }, [roomId, socket]);
 
   function sendMessage() {
     socket.emit("message:send", {
+      username,
       roomId: Number(roomId),
       content: text,
     });
@@ -41,7 +50,7 @@ export default function ChatRoom() {
       <div className="h-80 overflow-y-auto border mb-4 p-2">
         {messages.map((m, i) => (
           <div key={i}>
-            <b>{m.senderId}</b>: {m.content}
+            <b>{m.senderName}</b>: {m.content}
           </div>
         ))}
       </div>

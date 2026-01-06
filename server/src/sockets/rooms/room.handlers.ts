@@ -6,7 +6,7 @@ import { joinSocketRoomSchema, leaveSocketRoomSchema } from "../../validators/ro
 
 export function registerRoomHandlers(io: Server, socket: AuthenticatedSocket) {
   socket.on(ROOM_EVENTS.JOIN_SOCKET, (payload) => {
-    const { roomId, roomCode, roomName } = validate(joinSocketRoomSchema, payload);
+    const { roomId, roomCode } = validate(joinSocketRoomSchema, payload);
     socket.join(roomCode);
     socket.data.rooms.set(roomId, roomCode);
   });

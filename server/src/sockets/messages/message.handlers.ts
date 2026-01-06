@@ -8,16 +8,16 @@ import { sendMessageSchema } from "../../validators/message.schema";
 export function registerMessageHandlers(io: Server, socket: AuthenticatedSocket) {
   socket.on(MESSAGE_EVENTS.SEND, async (payload) => {
     try {
-      const { roomId, content } = validate(sendMessageSchema, payload);
+      const { roomId, content, username } = validate(sendMessageSchema, payload);
       const roomCode = socket.data.rooms.get(roomId);
       if (!roomCode) throw new Error();
 
       await sendMessage(roomId, socket.userId, content);
 
       io.to(roomCode).emit(MESSAGE_EVENTS.RECEIVE, {
-        senderId: socket.userId,
+        senderName: username,
         content,
-        createdAt: new Date(),
+        roomId,
       });
     } catch {
       socket.emit("error", { message: "MESSAGE_FORBIDDEN" });
