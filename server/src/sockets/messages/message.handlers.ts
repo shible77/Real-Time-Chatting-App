@@ -12,12 +12,12 @@ export function registerMessageHandlers(io: Server, socket: AuthenticatedSocket)
       const roomCode = socket.data.rooms.get(roomId);
       if (!roomCode) throw new Error();
 
-      await sendMessage(roomId, socket.userId, content);
+      const messageId=await sendMessage(roomId, socket.userId, content);
 
       io.to(roomCode).emit(MESSAGE_EVENTS.RECEIVE, {
         senderName: username,
         content,
-        roomId,
+        id:messageId
       });
     } catch {
       socket.emit("error", { message: "MESSAGE_FORBIDDEN" });

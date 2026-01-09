@@ -17,9 +17,10 @@ export async function sendMessage(roomId: number, senderId: string, content: str
 
   if (!member.length) throw new Error("FORBIDDEN");
 
-  await db.insert(messages).values({
+  const [result]=await db.insert(messages).values({
     roomId,
     senderId,
     content,
-  });
+  }).$returningId();
+  return result.id
 }

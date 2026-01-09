@@ -7,7 +7,7 @@ import { getUserName } from "../auth/auth.store";
 type message = {
   senderName: string,
   content: string,
-  roomId: number
+  id: number
 }
 
 export default function ChatRoom() {
