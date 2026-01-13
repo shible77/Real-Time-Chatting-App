@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Dashboard from "./pages/DashBoard";
@@ -10,17 +10,29 @@ import { setAuthToken } from "./api/client";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = getToken();
-  return token ? children : <Navigate to="/login" />;
+  return token ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
-  const token = getToken();
+  const [token, setToken] = useState<string | null>(getToken());
+  console.log("App render with token:", token);
+
   useEffect(() => {
     if (!token) return;
 
     setAuthToken(token);
     connectSocket(token);
   }, [token]);
+
+  // Listen for token changes (after login)
+  useEffect(() => {
+    const handleStorage = () => {
+      setToken(getToken());
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   return (
     <Routes>
@@ -37,7 +49,7 @@ export default function App() {
       />
 
       <Route
-        path="/rooms/:roomId"
+        path="/rooms"
         element={
           <ProtectedRoute>
             <ChatRoom />
@@ -47,7 +59,7 @@ export default function App() {
 
       <Route
         path="/"
-        element={<Navigate to={token ? "/dashboard" : "/login"} />}
+        element={<Navigate to={token ? "/dashboard" : "/login"} replace />}
       />
     </Routes>
   );

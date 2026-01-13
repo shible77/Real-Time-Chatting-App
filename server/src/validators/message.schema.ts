@@ -7,5 +7,5 @@ export const sendMessageSchema = z.object({
 });
 
 export const getMessagesSchema = z.object({
-  roomId: z.number().int().positive(),
+  roomId: z.coerce.number().int().positive(),
 })

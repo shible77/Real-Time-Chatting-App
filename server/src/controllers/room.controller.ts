@@ -6,14 +6,14 @@ import { roomMembers } from "../db/schema/roomMembers";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { validate } from "../utils/validate";
-import { joinRoomSchema, leaveRoomSchema } from "../validators/room.schema";
+import { joinRoomSchema, leaveRoomSchema, createRoomSchema } from "../validators/room.schema";
 import { getIO } from "../sockets/socket.instance";
 import { ROOM_EVENTS } from "../sockets/rooms/room.events";
 
 export async function createRoom(req: AuthRequest, res: Response) {
   const io=getIO();
   const roomCode = uuid().slice(0, 8);
-  const roomName = `Room-${roomCode}`;
+  const { roomName } = validate(createRoomSchema, req.body);
   const [result] = await db
     .insert(rooms)
     .values({ roomCode, roomName, createdBy: req.user!.userId });
@@ -25,7 +25,8 @@ export async function createRoom(req: AuthRequest, res: Response) {
   });
   io.to(`user:${req.user!.userId}`).emit(ROOM_EVENTS.JOIN_SOCKET, {
     roomId: result.insertId,
-    roomName
+    roomName,
+    roomCode
   });
   res.status(201).json({ roomCode });
 }
@@ -73,12 +74,13 @@ export async function joinRoomByCode(req: AuthRequest, res: Response) {
 }
 
 export async function getMyRooms(req: AuthRequest, res: Response) {
-  const rooms = await db
-    .select()
+  const roomList = await db
+    .select({roomId: roomMembers.roomId, roomName: rooms.roomName, roomCode: rooms.roomCode})
     .from(roomMembers)
+    .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
     .where(eq(roomMembers.userId, req.user!.userId));
 
-  res.json(rooms);
+  res.status(200).json({success:true, roomList});
 }
 
 export async function leaveRoom(req: AuthRequest, res: Response) {

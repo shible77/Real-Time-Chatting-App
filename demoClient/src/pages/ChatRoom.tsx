@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { getMessagesApi } from "../api/messages.api";
 import { getSocket } from "../sockets/socket";
 import { getUserName } from "../auth/auth.store";
@@ -10,8 +10,15 @@ type message = {
   id: number
 }
 
+type RoomState = {
+  roomId: number;
+  roomCode: string;
+};
+
 export default function ChatRoom() {
-  const { roomId } = useParams();
+  const location = useLocation();
+  const { roomId, roomCode } = location.state as RoomState
+  //console.log(roomId)
   const socket = getSocket();
   const [messages, setMessages] = useState<message[]>([]);
   const [text, setText] = useState("");
@@ -22,6 +29,7 @@ export default function ChatRoom() {
 
     socket.emit("room:join_socket", {
       roomId: Number(roomId),
+      roomCode: roomCode!
     });
 
     socket.on("message:receive", (msg) => {
@@ -34,7 +42,7 @@ export default function ChatRoom() {
       });
       socket.off("message:receive");
     };
-  }, [roomId, socket]);
+  }, [roomId, roomCode, socket]);
 
   function sendMessage() {
     socket.emit("message:send", {
@@ -48,7 +56,7 @@ export default function ChatRoom() {
   return (
     <div className="p-6">
       <div className="h-80 overflow-y-auto border mb-4 p-2">
-        {messages.map((m, i) => (
+        {messages.length===0 ? "No Message" : messages.map((m, i) => (
           <div key={i}>
             <b>{m.senderName}</b>: {m.content}
           </div>

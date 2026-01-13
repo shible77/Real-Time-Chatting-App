@@ -12,14 +12,14 @@ export default function Login() {
   const navigate = useNavigate();
 
   async function login() {
-    const { token, username } = await loginApi(email, password);
+    const { token, userName } = await loginApi(email, password);
 
     saveToken(token);
-    saveUserName(username);
+    saveUserName(userName);
     setAuthToken(token);
     connectSocket(token);
 
-    navigate("/");
+    navigate("/dashboard", { replace: true });
   }
 
   return (
