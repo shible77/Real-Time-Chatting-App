@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { db } from "../db/setup";
 import { rooms } from "../db/schema/rooms";
@@ -6,12 +6,13 @@ import { roomMembers } from "../db/schema/roomMembers";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { validate } from "../utils/validate";
-import { joinRoomSchema, leaveRoomSchema, createRoomSchema } from "../validators/room.schema";
+import { joinRoomSchema, leaveRoomSchema, createRoomSchema, getRoomInfoSchema } from "../validators/room.schema";
 import { getIO } from "../sockets/socket.instance";
 import { ROOM_EVENTS } from "../sockets/rooms/room.events";
+import { users } from "../db/schema/users";
 
 export async function createRoom(req: AuthRequest, res: Response) {
-  const io=getIO();
+  const io = getIO();
   const roomCode = uuid().slice(0, 8);
   const { roomName } = validate(createRoomSchema, req.body);
   const [result] = await db
@@ -63,8 +64,9 @@ export async function joinRoomByCode(req: AuthRequest, res: Response) {
   });
   const io = getIO();
   io.to(`user:${userId}`).emit(ROOM_EVENTS.JOIN_SOCKET, {
-  roomId: room.id,
-  roomName: room.roomName});
+    roomId: room.id,
+    roomName: room.roomName
+  });
 
   return res.status(200).json({
     message: "ROOM_JOINED",
@@ -75,12 +77,12 @@ export async function joinRoomByCode(req: AuthRequest, res: Response) {
 
 export async function getMyRooms(req: AuthRequest, res: Response) {
   const roomList = await db
-    .select({roomId: roomMembers.roomId, roomName: rooms.roomName, roomCode: rooms.roomCode})
+    .select({ roomId: roomMembers.roomId, roomName: rooms.roomName, roomCode: rooms.roomCode })
     .from(roomMembers)
     .innerJoin(rooms, eq(roomMembers.roomId, rooms.id))
     .where(eq(roomMembers.userId, req.user!.userId));
 
-  res.status(200).json({success:true, roomList});
+  res.status(200).json({ success: true, roomList });
 }
 
 export async function leaveRoom(req: AuthRequest, res: Response) {
@@ -89,4 +91,23 @@ export async function leaveRoom(req: AuthRequest, res: Response) {
   await db.delete(roomMembers).where(eq(roomMembers.roomId, Number(roomId)));
 
   res.json({ message: "LEFT_ROOM" });
+}
+
+export async function getRoomInfo(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const { roomId } = validate(getRoomInfoSchema, req.params);
+    const room = await db
+      .select({id: rooms.id, name: rooms.roomName, code: rooms.roomCode, createdBy: users.name, createdAt: rooms.createdAt})
+      .from(rooms)
+      .innerJoin(users, eq(rooms.createdBy, users.id))
+      .where(eq(rooms.id, Number(roomId)))
+      .limit(1)
+      .then((r) => r[0]);
+    if (!room) {
+      return res.status(404).json({ success: false, message: "Room not found" });
+    }
+    return res.status(200).json({ success: true, room });
+  } catch (err) {
+    next(err);
+  }
 }

@@ -16,3 +16,11 @@ export async function getMyRoomsApi() {
   }
   throw new Error("Failed to fetch rooms");
 }
+
+export async function getRoomInfoApi(roomId: number) {
+  const res = await api.get(`/rooms/${roomId}`);
+  if(res.status===200){
+    return res.data.room;
+  }
+  throw new Error("Failed to fetch room info");
+}

@@ -18,9 +18,15 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    getMyRoomsApi().then(setRooms);
+     getMyRoomsApi().then(setRooms)
+     .catch((err) => {
+        //alert("Failed to fetch rooms");
+        console.error({"Failed to fetch rooms" : err});
+     });
+  }, []);
 
-    socket.on("room:join_socket", (room) => {
+  useEffect(() => {
+     socket.on("room:join_socket", (room) => {
       setRooms((prev) => [...prev, room]);
     });
 
@@ -30,10 +36,13 @@ export default function Dashboard() {
   }, [socket]);
 
   async function joinRoom() {
-    await joinRoomApi(roomCode);
-    setRoomCode("");
+    try {
+      await joinRoomApi(roomCode);
+      setRoomCode("");
+    } catch {
+      alert("Failed to join room");
+    }
   }
-
   async function handleCreateRoom(roomName: string) {
     try {
       await createRoomApi(roomName);

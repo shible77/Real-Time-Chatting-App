@@ -1,9 +1,6 @@
 import { ZodType } from "zod";
 
-export function validate<S extends ZodType<any, any, any>>(
-  schema: S,
-  data: unknown
-): S["_output"] {
+export function validate<S extends ZodType<any, any, any>>(schema: S, data: unknown): S["_output"] {
   const result = schema.safeParse(data);
 
   if (!result.success) {

@@ -20,3 +20,7 @@ export const joinSocketRoomSchema = z.object({
 export const leaveSocketRoomSchema = z.object({
   roomId: z.number().int().positive(),
 });
+
+export const getRoomInfoSchema = z.object({
+    roomId: z.coerce.number().int().positive(),
+});

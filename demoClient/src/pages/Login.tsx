@@ -6,22 +6,26 @@ import { connectSocket } from "../sockets/socket";
 import { Link, useNavigate } from "react-router-dom";
 import { saveUserName } from "../auth/auth.store";
 
-export default function Login() {
+export default function Login({setToken}: {setToken: (token: string | null) => void}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   async function login() {
-    const { token, userName } = await loginApi(email, password);
+    try {
+      const { token, userName } = await loginApi(email, password);
+      saveToken(token);
+      saveUserName(userName);
+      setAuthToken(token);
+      connectSocket(token);
+      setToken(token);
 
-    saveToken(token);
-    saveUserName(userName);
-    setAuthToken(token);
-    connectSocket(token);
-
-    navigate("/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      // Display error to user (e.g., set error state and render message)
+      console.error("Login failed:", error);
+    }
   }
-
   return (
     <div className="h-screen flex items-center justify-center">
       <div className="border p-6 w-80 rounded">

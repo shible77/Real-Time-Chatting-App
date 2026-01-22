@@ -6,7 +6,7 @@ import Dashboard from "./pages/DashBoard";
 import ChatRoom from "./pages/ChatRoom";
 import { getToken } from "./auth/auth.store";
 import { connectSocket } from "./sockets/socket";
-import { setAuthToken } from "./api/client";
+//import { setAuthToken } from "./api/client";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const token = getToken();
@@ -14,30 +14,29 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 }
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(getToken());
+  const [token, setToken] = useState<string | null>(null);
   console.log("App render with token:", token);
 
-  useEffect(() => {
-    if (!token) return;
-
-    setAuthToken(token);
-    connectSocket(token);
-  }, [token]);
-
-  // Listen for token changes (after login)
   useEffect(() => {
     const handleStorage = () => {
       setToken(getToken());
     };
-
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    handleStorage();
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    //setAuthToken(token);
+    const socket = connectSocket(token);
+    return () => {
+      socket?.disconnect?.();
+    };
+  }, [token]);
 
   return (
     <Routes>
       <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login setToken={setToken}/>} />
 
       <Route
         path="/dashboard"
