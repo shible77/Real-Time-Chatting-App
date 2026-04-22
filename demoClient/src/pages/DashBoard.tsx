@@ -406,7 +406,7 @@ export default function Dashboard() {
             <ChatIcon />
           </div>
           <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: 17, color: "#f0f0f0", letterSpacing: "-0.01em" }}>
-            ChatRooms
+            Chitchat
           </span>
         </div>
 
