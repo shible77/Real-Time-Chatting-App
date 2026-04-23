@@ -24,3 +24,11 @@ export async function getRoomInfoApi(roomId: number) {
   }
   throw new Error("Failed to fetch room info");
 }
+
+export async function leaveRoomApi(roomId: number) {
+  const res = await api.delete(`/rooms/${roomId}`);
+  if(res.status!==200){
+    throw new Error("Failed to leave room");
+  }
+  return res.data;
+}

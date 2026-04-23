@@ -9,42 +9,50 @@ import { validate } from "../utils/validate";
 import { loginSchema, signupSchema } from "../validators/auth.schema";
 
 export async function signup(req: Request, res: Response) {
-  const { name, email, password } = validate(signupSchema, req.body);
+  try {
+    const { name, email, password } = validate(signupSchema, req.body);
 
-  const hash = await argon2.hash(password);
+    const hash = await argon2.hash(password);
 
-  await db.insert(users).values({
-    name,
-    email,
-    passwordHash: hash,
-  });
+    await db.insert(users).values({
+      name,
+      email,
+      passwordHash: hash,
+    });
 
-  res.status(201).json({status:"success", message: "USER_CREATED" });
+    res.status(201).json({ status: "success", message: "USER_CREATED" });
+  } catch (err) {
+    throw err;
+  }
 }
 
 export async function login(req: Request, res: Response) {
-  const { email, password } = validate(loginSchema, req.body);
+  try {
+    const { email, password } = validate(loginSchema, req.body);
 
-  const user = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
 
-  if (!user.length) {
-    return res.status(401).json({ message: "INVALID_CREDENTIALS" });
+    if (!user.length) {
+      return res.status(401).json({ message: "INVALID_CREDENTIALS" });
+    }
+
+    const valid = await argon2.verify(user[0].passwordHash, password);
+    if (!valid) {
+      return res.status(401).json({ message: "INVALID_CREDENTIALS" });
+    }
+
+    const token = jwt.sign(
+      { userId: user[0].id },
+      env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({ status: "success", token: token, userName: user[0].name });
+  } catch (err) {
+    throw err;
   }
-
-  const valid = await argon2.verify(user[0].passwordHash, password);
-  if (!valid) {
-    return res.status(401).json({ message: "INVALID_CREDENTIALS" });
-  }
-
-  const token = jwt.sign(
-    { userId: user[0].id},
-    env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  res.status(200).json({status:"success", token:token, userName: user[0].name });
 }
