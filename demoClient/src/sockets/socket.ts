@@ -19,11 +19,11 @@ export function connectSocket(token: string): Socket {
   });
 
   socket.on("connect", () => {
-    console.log("🟢 Socket connected:", socket?.id);
+    //console.log("🟢 Socket connected:", socket?.id);
   });
 
   socket.on("disconnect", () => {
-    console.log("🔴 Socket disconnected");
+    //console.log("🔴 Socket disconnected");
   });
 
   return socket;

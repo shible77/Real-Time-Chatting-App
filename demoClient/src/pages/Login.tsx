@@ -221,6 +221,10 @@ export default function Login({ setToken }: { setToken: (token: string | null) =
   const [showWakeModal, setShowWakeModal] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = "Chitchat | Sign In";
+  }, []);
+
   // Show once per browser session (survives page refresh, resets when tab is closed)
   useEffect(() => {
     const dismissed = sessionStorage.getItem("serverWakeDismissed");
