@@ -8,7 +8,7 @@ import { errorHandler } from "./middlewares/error.middleware";
 export const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "real-time-chatting-app-gamma.vercel.app",
   credentials: true
 }));
 app.use(express.json());
