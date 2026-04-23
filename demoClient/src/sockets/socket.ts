@@ -13,7 +13,7 @@ export function connectSocket(token: string): Socket {
     socket = null;
   }
 
-  socket = io("http://localhost:5000", {
+  socket = io("https://real-time-chatting-app-lmo8.onrender.com", {
     auth: { token },
     autoConnect: true,
   });

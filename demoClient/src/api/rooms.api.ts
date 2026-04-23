@@ -6,7 +6,11 @@ export async function createRoomApi(roomName: string) {
 }
 
 export async function joinRoomApi(roomCode: string) {
-  await api.post("/rooms/join", { roomCode });
+  const res = await api.post("/rooms/join", { roomCode });
+  if(res.status===200){
+    return res.data;
+  }
+  throw new Error("Failed to join room");
 }
 
 export async function getMyRoomsApi() {
